@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:icon="@android:drawable/ic_menu_share"
+        app:showAsAction="always"
+        android:title="share"
+        android:id="@+id/menu_share_photos"/>
+    <item
+        android:title="cancel all"
+        android:id="@+id/menu_deselect_photos"
+        app:showAsAction="ifRoom"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"/>
+</menu>
