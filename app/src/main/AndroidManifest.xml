@@ -76,10 +76,6 @@
         <activity
             android:name=".ViewPhotos.PhotoPageActivity"
             android:configChanges="keyboard|orientation|screenSize"/>
-        <activity
-            android:name=".LoginActivity"
-            android:label="@string/title_activity_login">
-        </activity>
     </application>
 
 </manifest>

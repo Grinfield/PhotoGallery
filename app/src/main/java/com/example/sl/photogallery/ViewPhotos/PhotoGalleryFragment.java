@@ -40,25 +40,27 @@ import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.sl.photogallery.FlickrFetcher;
-import com.example.sl.photogallery.GalleryItem;
+import com.example.sl.photogallery.BaseFragment;
 import com.example.sl.photogallery.ImageCache.ImageUtil;
 import com.example.sl.photogallery.ImageCache.ThumbnailDownloader;
+import com.example.sl.photogallery.LoginIn.LoginFragment;
 import com.example.sl.photogallery.R;
 import com.example.sl.photogallery.Service.PollService;
-import com.example.sl.photogallery.VisibleFragment;
+import com.example.sl.photogallery.model.FlickrFetcher;
+import com.example.sl.photogallery.model.GalleryItem;
 import com.googlecode.flickrjandroid.oauth.OAuth;
 
 import java.io.File;
 import java.util.ArrayList;
 
+import static com.example.sl.photogallery.LoginIn.LoginFragment.OAUTH_KEY;
+
 /**
  * Created by sl on 2016/11/10.
  */
 
-public class PhotoGalleryFragment extends VisibleFragment {
+public class PhotoGalleryFragment extends BaseFragment {
     private static final String TAG = "PhotoGalleryFragment";
-    private static final String OAUTH_KEY = "oauth";
 
     private GridView mGridView;
     private ProgressBar mLoadingProgressBar;
@@ -77,9 +79,8 @@ public class PhotoGalleryFragment extends VisibleFragment {
     private int mImageWidth;
     private int mImageHeight;
     private boolean mCanGetBitmapFromNetWork = false;
-    private boolean isPersonal = false;
-    private OAuth mOAuth;
-    private OAuth backupOAuth;
+    public boolean mIsPersonal = false;
+    private OAuth mOAuth, backupOAuth;
 
     public static PhotoGalleryFragment getInstance(OAuth oauth){
         PhotoGalleryFragment fragment = new PhotoGalleryFragment();
@@ -91,6 +92,19 @@ public class PhotoGalleryFragment extends VisibleFragment {
         return fragment;
     }
 
+    @Override
+    public void onReceiveOauth(OAuth oauth) {
+        Log.i(TAG, "receive broadcast: " + oauth);
+        if (oauth != null && oauth.getUser().getId() != null){
+            String userName = oauth.getUser().getUsername();
+            if (userName != null){
+                backupOAuth = mOAuth = oauth;
+            }
+        }else {
+            backupOAuth = mOAuth = null;
+        }
+        updateUI();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,10 +114,10 @@ public class PhotoGalleryFragment extends VisibleFragment {
         setHasOptionsMenu(true);
 
         if (getArguments() != null){
-            mOAuth = (OAuth) getArguments().getSerializable(OAUTH_KEY);
+            mOAuth = (OAuth) getArguments().getSerializable(LoginFragment.OAUTH_KEY);
             if (mOAuth != null && mOAuth.getUser().getId() != null){
                 backupOAuth = mOAuth;
-                isPersonal = true;
+                mIsPersonal = true;
             }
         }
 
@@ -125,7 +139,7 @@ public class PhotoGalleryFragment extends VisibleFragment {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     mCanGetBitmapFromNetWork = true;
-                    //AsyncTask获取GalleyItem数据
+
                     updateItems();
                 }
             });
@@ -159,6 +173,20 @@ public class PhotoGalleryFragment extends VisibleFragment {
         new FetchItemsTask().execute(current_page);
     }
 
+    public void updateUI(){
+        if (mFloatingActionButton != null){
+            if ( backupOAuth == null){
+                mFloatingActionButton.hide();
+            }else {
+                mFloatingActionButton.show();
+                if (mIsPersonal){
+                    mFloatingActionButton.setImageResource(R.drawable.earth_64px);
+                }else
+                    mFloatingActionButton.setImageResource(R.drawable.personal_icon);
+            }
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView called");
@@ -168,26 +196,16 @@ public class PhotoGalleryFragment extends VisibleFragment {
         mGridView = (GridView)v.findViewById(R.id.gridView);
         mLoadingProgressBar = (ProgressBar)v.findViewById(R.id.fetching_photos_bar);
         mFloatingActionButton = (FloatingActionButton)v.findViewById(R.id.floatingActionButton);
-
-        if ( backupOAuth == null){
-            mFloatingActionButton.hide();
-        }else {
-            mFloatingActionButton.show();
-            mFloatingActionButton.setImageResource(R.drawable.earth_64px);
-        }
-
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (backupOAuth != null){
-                    if (isPersonal){
+                    if (mIsPersonal){
                         mOAuth = null;
-                        isPersonal = false;
-                        //mFloatingActionButton.setImageResource(R.drawable.earth_64px);
+                        mIsPersonal = false;
                     }else {
                         mOAuth = backupOAuth;
-                        isPersonal = true;
-                        //mFloatingActionButton.setImageResource(R.drawable.personal_icon);
+                        mIsPersonal = true;
                     }
                 }
                 updateItems();
@@ -206,7 +224,6 @@ public class PhotoGalleryFragment extends VisibleFragment {
             }
         });
 
-        //mSwipeRefreshLayout.requestDisallowInterceptTouchEvent(true);
         mSwipeRefreshLayout.setOnChildScrollUpCallback(new SwipeRefreshLayout.OnChildScrollUpCallback() {
             @Override
             public boolean canChildScrollUp(SwipeRefreshLayout parent, @Nullable View child) {
@@ -237,8 +254,10 @@ public class PhotoGalleryFragment extends VisibleFragment {
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (firstVisibleItem + visibleItemCount == totalItemCount && current_page == fetched_page){
-                    scrollPosition = firstVisibleItem + 3;  //????
+                if (firstVisibleItem + visibleItemCount == totalItemCount
+                        && current_page == fetched_page
+                        && visibleItemCount < totalItemCount){
+                    scrollPosition = firstVisibleItem + 3;
                     new FetchItemsTask().execute(++current_page);
                 }
             }
@@ -249,9 +268,6 @@ public class PhotoGalleryFragment extends VisibleFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 GalleryItem item = mItems.get(position);
                 Uri photoPageUri = Uri.parse(item.getPhotoPageUrl());
-                /**
-                 *Intent i = new Intent(Intent.ACTION_VIEW, photoPageUri);
-                 */
                 Intent i = new Intent(getActivity(), PhotoPageActivity.class);
                 i.setData(photoPageUri);
                 startActivity(i);
@@ -349,7 +365,7 @@ public class PhotoGalleryFragment extends VisibleFragment {
         });
 
         setupAdapter();
-
+        updateUI();
         return v;
     }
 
@@ -377,6 +393,9 @@ public class PhotoGalleryFragment extends VisibleFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.menu_item_search:
+                if (mIsPersonal){
+                    mIsPersonal = false;
+                }
                 getActivity().onSearchRequested();
                 return true;
             case R.id.menu_item_clear:
@@ -483,15 +502,15 @@ public class PhotoGalleryFragment extends VisibleFragment {
 
             if (mOAuth != null
                     && mOAuth.getUser().getId() != null
-                    && isPersonal){
+                    && mIsPersonal){
                 Log.i(TAG, "received oauth: " + mOAuth);
                 return new FlickrFetcher().fetchUserPhotos(mOAuth, params[0]);
             }else if (query != null){
                  Log.i(TAG, "received a query: " + query);
-                 Log.i(TAG, "current page" + current_page);
                  return new FlickrFetcher().search(query, params [0]);
              }else{
                 Log.i(TAG, "no extra params: universal search");
+                Log.i(TAG, "current page" + current_page);
                  return new FlickrFetcher().fetchItems(params [0]);
              }
         }
@@ -503,12 +522,8 @@ public class PhotoGalleryFragment extends VisibleFragment {
             }else {
                 mItems = galleryItems;
             }
-            if (mFloatingActionButton != null){
-                if (isPersonal){
-                    mFloatingActionButton.setImageResource(R.drawable.earth_64px);
-                }else
-                    mFloatingActionButton.setImageResource(R.drawable.personal_icon);
-            }
+
+            updateUI();
             mLoadingProgressBar.setVisibility(View.INVISIBLE);
             mSwipeRefreshLayout.setRefreshing(false);
             setupAdapter();

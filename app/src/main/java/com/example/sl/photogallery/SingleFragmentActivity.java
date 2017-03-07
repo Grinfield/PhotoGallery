@@ -16,16 +16,22 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         return R.layout.activity_fragment;
     }
 
+    protected abstract String getTag();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_fragment);
         setContentView(getLayoutResId());
+        addFragment( );
+    }
+
+    public void addFragment() {
         android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
-        if(fragment == null){
-            fragment = createFragment();
-            fm.beginTransaction().add(R.id.fragmentContainer, fragment).commit();
+        Fragment targetFragment = fm.findFragmentById(R.id.fragmentContainer);
+        if(targetFragment == null){
+            targetFragment = createFragment();
+            fm.beginTransaction().add(R.id.fragmentContainer, targetFragment, getTag()).commit();
         }
     }
 }

@@ -18,6 +18,7 @@ import com.example.sl.photogallery.LoginIn.LoginUtil;
 import com.example.sl.photogallery.TakePhoto.PhotoTakeFragment;
 import com.example.sl.photogallery.TakePhoto.PhotoTakenActivity;
 import com.example.sl.photogallery.ViewPhotos.PhotoGalleryFragment;
+import com.example.sl.photogallery.model.FlickrFetcher;
 import com.googlecode.flickrjandroid.oauth.OAuth;
 
 public class PhotoGalleryActivity extends SingleFragmentActivity
@@ -29,25 +30,29 @@ public class PhotoGalleryActivity extends SingleFragmentActivity
     private PhotoTakeFragment mPhotoTakeFragment;
     private LoginFragment mLoginFragment;
     private LoginUtil mLoginUtil;
-    private LoginFragment.OnFragmentShowedListener mOnFragmentShowedListener;
-
 
     @Override
     public void onFragmentShowed() {
         if (mBottomNavigationBar != null){
             PhotoGalleryFragment photoGalleryFragment =
                     (PhotoGalleryFragment)getSupportFragmentManager().findFragmentByTag("viewTab");
-            Log.i(TAG, "PhotoGalleryFragment tag: " + photoGalleryFragment.getTag());
             if (photoGalleryFragment != null){
                 mPhotoGalleryFragment = photoGalleryFragment;
+                mPhotoGalleryFragment.mIsPersonal = true;
+                mPhotoGalleryFragment.updateItems();
             }
             mBottomNavigationBar.selectTab(0, false);
         }
     }
 
     @Override
+    protected String getTag() {
+        return "viewTab";
+    }
+
+    @Override
     protected Fragment createFragment() {
-        mPhotoGalleryFragment =  PhotoGalleryFragment.getInstance(null);
+        mPhotoGalleryFragment = new PhotoGalleryFragment();
         return mPhotoGalleryFragment;
     }
 
@@ -55,7 +60,6 @@ public class PhotoGalleryActivity extends SingleFragmentActivity
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
 
-        Log.i(TAG, "onNewIntent called.");
         if (intent.ACTION_SEARCH.equals(intent.getAction())){
             PhotoGalleryFragment fragment = (PhotoGalleryFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
             String query = intent.getStringExtra(SearchManager.QUERY);
@@ -75,8 +79,7 @@ public class PhotoGalleryActivity extends SingleFragmentActivity
     @Override
     protected void onStart() {
         super.onStart();
-        Intent intent = getIntent();
-        Log.i(TAG, "onStart() execute, intent: " + intent);
+
     }
 
 

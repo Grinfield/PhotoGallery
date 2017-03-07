@@ -15,4 +15,5 @@
     <string name="my_photos">view my own photos</string>
     <string name="action_sign_in">Sign in</string>
     <string name="menu_logout_string">Log out</string>
+    <string name="menu_login_string">Log in</string>
 </resources>

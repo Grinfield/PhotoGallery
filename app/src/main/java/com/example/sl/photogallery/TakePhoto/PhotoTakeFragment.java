@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,8 +22,10 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import com.example.sl.photogallery.BaseFragment;
 import com.example.sl.photogallery.ImageCache.ImageUtil;
 import com.example.sl.photogallery.R;
+import com.googlecode.flickrjandroid.oauth.OAuth;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,7 +40,7 @@ import java.util.UUID;
  * Created by sl on 2017/2/28.
  */
 
-public class PhotoTakeFragment extends Fragment{
+public class PhotoTakeFragment extends BaseFragment {
     private static final String TAG = "PhotoTakeFragment";
     private Camera mCamera;
     private ImageUtil mImageUtil = new ImageUtil();
@@ -115,6 +116,11 @@ public class PhotoTakeFragment extends Fragment{
         boolean externalStorageAvailable = Environment
                 .getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
         return externalStorageAvailable;
+    }
+
+    @Override
+    public void onReceiveOauth(OAuth oauth) {
+
     }
 
     @Override

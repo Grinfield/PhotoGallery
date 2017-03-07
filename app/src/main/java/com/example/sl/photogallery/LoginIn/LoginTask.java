@@ -11,7 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.sl.photogallery.FlickrFetcher;
+import com.example.sl.photogallery.model.FlickrFetcher;
 import com.googlecode.flickrjandroid.REST;
 import com.googlecode.flickrjandroid.auth.Permission;
 import com.googlecode.flickrjandroid.oauth.OAuthInterface;
@@ -25,22 +25,7 @@ import java.net.URL;
 
 public class LoginTask extends AsyncTask<Void, Void, String>  {
     private static final String TAG = "LoginTask";
-    /*
-    private static final String ENDPOINT_OAUTH = "https://api.flickr.com/services/oauth/request_token";
-    public static final String API_KEY = "77bd723be1c9570c9df9cb84109eebbe";
-    public static final String SECRET_KEY = "724af57ae7331f98";
 
-    private static final String OAUTH_CALLBACK = "oauth://com.example.sl";
-    public static final String PARAM_OAUTH_TOKEN_SECTET = "oauth_token_secret";
-    public static final String PARAM_OAUTH_CONSUMER_KEY = "oauth_consumer_key";
-    private static final String PARAM_OAUTH_CALLBACK = "oauth_callback";
-    private static final String PARAM_OAUTH_NONCE = "oauth_nonce";
-    private static final String PARAM_OAUTH_TIMESTAMP = "oauth_timestamp";
-    private static final String PARAM_OAUTH_SIGNATURE = "oauth_signature_method";
-    private static final String PARAM_OAUTH_VERSION = "oauth_version";
-    private static final String PARAM_OAUTH_TOKEN = "oauth_version";
-    */
-    //private static final Uri OAUTH_CALLBACK_URI = Uri.parse(FlickrLoginManager.CALLBACK_SCHEME + "://oauth");
     private ProgressDialog mProgressDialog;
     private AppCompatActivity mActivity;
     private SharedPreferences mSharedPreferences = null;

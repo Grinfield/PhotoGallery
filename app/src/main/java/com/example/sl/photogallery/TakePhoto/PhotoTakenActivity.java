@@ -16,6 +16,11 @@ import com.example.sl.photogallery.SingleFragmentActivity;
 public class PhotoTakenActivity extends SingleFragmentActivity {
 
     @Override
+    protected String getTag() {
+        return null;
+    }
+
+    @Override
     protected Fragment createFragment() {
         return new PhotoTakeFragment();
     }

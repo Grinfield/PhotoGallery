@@ -15,4 +15,9 @@ public class PhotoPageActivity extends SingleFragmentActivity {
     protected Fragment createFragment() {
         return new PhotoPageFragment();
     }
+
+    @Override
+    protected String getTag() {
+        return null;
+    }
 }

@@ -1,4 +1,4 @@
-package com.example.sl.photogallery;
+package com.example.sl.photogallery.model;
 
 /**
  * Created by sl on 2016/11/10.

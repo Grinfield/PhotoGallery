@@ -12,15 +12,21 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.sl.photogallery.R;
-import com.example.sl.photogallery.VisibleFragment;
+import com.example.sl.photogallery.BaseFragment;
+import com.googlecode.flickrjandroid.oauth.OAuth;
 
 /**
  * Created by sl on 2016/11/15.
  */
 
-public class PhotoPageFragment extends VisibleFragment {
+public class PhotoPageFragment extends BaseFragment {
     private String mUrl;
     private WebView mWebView;
+
+    @Override
+    public void onReceiveOauth(OAuth oauth) {
+
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

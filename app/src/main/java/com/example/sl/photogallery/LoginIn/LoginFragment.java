@@ -1,14 +1,13 @@
 package com.example.sl.photogallery.LoginIn;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,15 +18,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.sl.photogallery.BaseFragment;
 import com.example.sl.photogallery.R;
 import com.example.sl.photogallery.ViewPhotos.PhotoGalleryFragment;
-import com.example.sl.photogallery.VisibleFragment;
 import com.googlecode.flickrjandroid.oauth.OAuth;
 
 /**
  * Created by sl on 2017/2/28.
  */
-public class LoginFragment extends VisibleFragment{
+public class LoginFragment extends BaseFragment {
+    public static final String  ACTION_SEND_OAUTH = "com.example.sl.photogallery.SEND_OAUTH";
+    public static final String OAUTH_KEY = "oauth";
+
     // UI references.
     private TextView mUserNameText;
     private ImageView mUserIconView;
@@ -37,6 +39,7 @@ public class LoginFragment extends VisibleFragment{
     private SharedPreferences mPreferences;
     private LoginUtil mLoginUtil;
     private OAuth mOauth;
+    private boolean isLogin = false;
     private OnFragmentShowedListener mFragmentShowedListener;
 
     public interface OnFragmentShowedListener{
@@ -62,6 +65,11 @@ public class LoginFragment extends VisibleFragment{
         }
     }
 
+    @Override
+    public void onReceiveOauth(OAuth oauth) {
+
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -82,8 +90,6 @@ public class LoginFragment extends VisibleFragment{
             @Override
             public void onClick(View view) {
                 new LoginTask((AppCompatActivity) getActivity()).execute();
-                //Intent intent = new Intent(getActivity(), LoginActivity.class);
-                //startActivity(intent);
             }
         });
 
@@ -94,50 +100,67 @@ public class LoginFragment extends VisibleFragment{
                 FragmentManager fm = getActivity().getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fm.beginTransaction();
                 fragmentTransaction.hide(LoginFragment.this);
-                fragmentTransaction.add(R.id.fragmentContainer, PhotoGalleryFragment.getInstance(mOauth), "viewTab")
-                                    .commit();
+                PhotoGalleryFragment fragment = (PhotoGalleryFragment) fm.findFragmentByTag("viewTab");
+                if (fragment != null){
+                    fragmentTransaction.show(fragment);
+                }else
+                    fragmentTransaction.add(R.id.fragmentContainer, PhotoGalleryFragment.getInstance(mOauth), "viewTab");
+                fragmentTransaction.commit();
                 fm.executePendingTransactions();
                 mFragmentShowedListener.onFragmentShowed();
             }
         });
 
-        if (mOauth != null && mOauth.getUser() != null) {
-            load(mOauth);
-        }
+        load(mOauth);
     }
 
     public void load(OAuth oauth) {
-        //mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        if (oauth != null){
+        if (oauth != null && oauth.getUser().getId() != null){
             String userName = oauth.getUser().getUsername();
-            String userId = oauth.getUser().getId();
-            String userUrl = oauth.getUser().getPhotosurl();
-            String userProfile = oauth.getUser().getProfileurl();
-            Log.i("LoginFragment", "userId: " + userId + " userUrl: " + userUrl + " userProfile: " + userProfile);
-
             if (userName != null){
+                isLogin = true;
                 mUserInfoLayout.setVisibility(View.VISIBLE);
                 mUserNameText.setText(userName);
                 mLoginButton.setVisibility(View.INVISIBLE);
             }
+        }else {
+            mUserInfoLayout.setVisibility(View.INVISIBLE);
+            mLoginButton.setVisibility(View.VISIBLE);
         }
+        sendOauthBroadcast(oauth);
+    }
+
+    private void sendOauthBroadcast(OAuth oauth) {
+        Intent intent = new Intent(ACTION_SEND_OAUTH);
+        intent.putExtra(OAUTH_KEY, oauth);
+        getActivity().sendBroadcast(intent);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
         getActivity().getMenuInflater().inflate(R.menu.log_out_menu, menu);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem logItem = menu.findItem(R.id.menu_log_out);
+        if (isLogin){
+            logItem.setTitle(R.string.menu_logout_string);
+        }else {
+            logItem.setTitle(R.string.menu_login_string);
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_log_out:
+                isLogin = false;
                 mLoginUtil.clearOAuthToken();
-                Fragment currentFragment = getFragmentManager().findFragmentByTag("loginTab");
-                FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
-                fragTransaction.detach(currentFragment);
-                fragTransaction.attach(currentFragment);
-                fragTransaction.commit();
+                mOauth = mLoginUtil.getSavedOAuthToken();
+                load(mOauth);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

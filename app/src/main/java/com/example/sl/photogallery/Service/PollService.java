@@ -15,8 +15,8 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.example.sl.photogallery.FlickrFetcher;
-import com.example.sl.photogallery.GalleryItem;
+import com.example.sl.photogallery.model.FlickrFetcher;
+import com.example.sl.photogallery.model.GalleryItem;
 import com.example.sl.photogallery.PhotoGalleryActivity;
 import com.example.sl.photogallery.R;
 
@@ -73,7 +73,7 @@ public class PollService extends IntentService{
 
         if (! resultId.equals(lastResultId)){
             Log.i(TAG, "Got a new result: " + resultId);
-            //向系统状态栏弹出消息
+
             Resources r = getResources();
             PendingIntent pi = PendingIntent.getActivity(this, 0,
                                 new Intent(this, PhotoGalleryActivity.class),
@@ -89,11 +89,6 @@ public class PollService extends IntentService{
                                         .setDefaults(Notification.DEFAULT_ALL)
                                         .setAutoCancel(true)
                                         .build();
-            //NotificationManager notificationManager = (NotificationManager)this.getSystemService(NOTIFICATION_SERVICE);
-            //notificationManager.notify((int)(Math.random() * 100), notification);
-            //有不同结果时发送广播
-            //sendBroadcast(new Intent(ACTION_SHOW_NOTIFICATION), PERM_PRIVATE);
-
             showBackgroundNotification(0, notification);
 
         }else{
@@ -104,7 +99,6 @@ public class PollService extends IntentService{
         Log.i(TAG, "Received an intent: " + intent);
     }
 
-    //设置Service启停定时器
     public static void setServiceAlarm(Context context, boolean isOn){
         Intent intent = new Intent(context, PollService.class);
         PendingIntent pi = PendingIntent.getService(context, 0 , intent, 0);
@@ -117,22 +111,21 @@ public class PollService extends IntentService{
             alarmManager.cancel(pi);
             pi.cancel();
         }
-        //存储定时器启停状态Preference
+
         PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(PREF_IS_ALARM_ON, isOn).commit();
     }
-    //检查ServiceAlarm的启停状态
+
     public static boolean isServiceAlarmOn(Context context){
         Intent intent = new Intent(context, PollService.class);
         PendingIntent pi = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_NO_CREATE);
         //Flag_NO_CREATE indicating that if the described PendingIntent does not already exist, then simply return null instead of creating it.
         return pi != null;
     }
-    //设置有序Broadcast
+
     void showBackgroundNotification(int requestCode, Notification notification){
         Intent i = new Intent(ACTION_SHOW_NOTIFICATION);
         i.putExtra("REQUEST_CODE", requestCode);
         i.putExtra("NOTIFICATION", notification);
-        Log.i(TAG, "notification is " + notification);
         sendOrderedBroadcast(i, PERM_PRIVATE, null, null, Activity.RESULT_OK, null, null);
     }
 

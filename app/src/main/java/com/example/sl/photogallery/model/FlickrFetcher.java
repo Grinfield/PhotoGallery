@@ -1,4 +1,4 @@
-package com.example.sl.photogallery;
+package com.example.sl.photogallery.model;
 
 import android.content.Context;
 import android.net.Uri;

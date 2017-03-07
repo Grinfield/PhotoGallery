@@ -30,18 +30,13 @@ public class LoginUtil {
     public static final String PREF_OAUTH_TOKEN_SECRET = "oauth_token_secret";
     public static final String PREF_OAUTH_USR_NAME = "oauth_user_name";
     public static final String PREF_OAUTH_USER_ID = "oauth_user_id";
-
     //used for login
     public static final String OAUTH_CALLBACK = "oauth://com.example.sl";
-    public static final String PARAM_OAUTH_CONSUMER_KEY = "oauth_consumer_key";
-    private static final String PARAM_OAUTH_NONCE = "oauth_nonce";
-    private static final String PARAM_OAUTH_TIMESTAMP = "oauth_timestamp";
-    private static final String PARAM_OAUTH_SIGNATURE = "oauth_signature_method";
-    private static final String PARAM_OAUTH_VERSION = "oauth_version";
 
     public LoginUtil(AppCompatActivity context){
         mActivity = context;
     }
+
     public LoginUtil(){
 
     }
@@ -57,24 +52,6 @@ public class LoginUtil {
         String oauthVerifier = data[1].substring(data[1].indexOf("=") + 1);
         Log.i(TAG, "oauthToken: " + oauth.getToken().getOauthToken());
         Log.i(TAG, "oauthVerifier: " + oauthVerifier);
-        //OAuth oauth = FlickrLoginManager.getOAuthToken();
-        //String tokenSecret = CacheManager.getStringCacheData(KEY_TOKEN_SECRET);
-        //SharedPreferences mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        //String tokenSecret = mSharedPreferences.getString(FlickrFetcher.PREF_OAUTH_TOKEN_SECRET, null);
-        //Log.i(TAG, "oauth:" + tokenSecret);
-        /*
-        if (oauth == null || oauth.getToken() == null || oauth.getToken().getOauthTokenSecret() == null) {
-            dismissLoadingDialog();
-            showToastErrorMessage("Authorization failed");
-            return;
-        }
-        */
-
-        /*
-        if (oauth != null && oauth.getToken() != null
-                && oauth.getToken().getOauthTokenSecret() != null){
-        }
-        */
         OAuthTask task = new OAuthTask(mActivity);
         task.execute(oauth.getToken().getOauthToken(), oauth.getToken().getOauthTokenSecret(), oauthVerifier);
     }
@@ -147,7 +124,10 @@ public class LoginUtil {
                     token.getOauthToken(), token.getOauthTokenSecret());
 
             FragmentManager fm = mActivity.getSupportFragmentManager();
-            LoginFragment fragment = (LoginFragment) fm.findFragmentById(R.id.fragmentContainer);
+            LoginFragment fragment = (LoginFragment) fm.findFragmentByTag("loginTab");
+            if (fragment == null){
+                fm.beginTransaction().replace(R.id.fragmentContainer, new LoginFragment(), "loginTab").commit();
+            }
             fragment.load(result);
         }
     }
