@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 /**
  * Created by sl on 2016/10/31.
  */
-//创建一个通用的抽象Activity类
+//create a common abstract activity
 public abstract class SingleFragmentActivity extends AppCompatActivity {
 
     protected abstract Fragment createFragment();

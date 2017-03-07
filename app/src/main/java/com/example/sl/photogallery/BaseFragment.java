@@ -35,7 +35,6 @@ public abstract class BaseFragment extends Fragment {
     private BroadcastReceiver mOnReceiveOAuth = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            //If we receive this, we are visible, so cancel the notification
             Log.i(TAG, "Got a broadcast: " + intent.getAction());
             OAuth oAuth = (OAuth)intent.getSerializableExtra(LoginFragment.OAUTH_KEY);
             onReceiveOauth(oAuth);

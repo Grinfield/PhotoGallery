@@ -166,7 +166,10 @@ public class PhotoGalleryFragment extends BaseFragment {
         current_page = 1;
         fetched_page = 0;
         if (mLoadingProgressBar != null){
-            mLoadingProgressBar.setVisibility(View.VISIBLE);
+            if (mSwipeRefreshLayout == null
+                    || (mSwipeRefreshLayout != null && !mSwipeRefreshLayout.isRefreshing())){
+                mLoadingProgressBar.setVisibility(View.VISIBLE);
+            }
         }
         Log.i(TAG, "update items called");
         Log.i(TAG, "current fragment id: " + PhotoGalleryFragment.this.hashCode());
@@ -463,14 +466,13 @@ public class PhotoGalleryFragment extends BaseFragment {
                 holder = (ViewHolder) convertView.getTag();
             }
             ImageView imageView = holder.imageView;
-            //imageView.setImageResource(R.drawable.brian_up_close);
             final GalleryItem tag = (GalleryItem) imageView.getTag();
             final GalleryItem item = getItem(position);
 
             if (!item.equals(tag)) {
                 imageView.setBackgroundResource(R.drawable.image_default);
             }
-
+            //loading image as gridView is not scrolling
             if (mIsGridViewIdle && mCanGetBitmapFromNetWork) {
                 imageView.setTag(item);
                 mThumbnailDownloader.bindBitmap(item.getUrl(), imageView, mImageWidth, mImageHeight);

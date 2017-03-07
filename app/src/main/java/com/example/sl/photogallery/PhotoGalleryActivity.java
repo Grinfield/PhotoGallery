@@ -64,10 +64,8 @@ public class PhotoGalleryActivity extends SingleFragmentActivity
             PhotoGalleryFragment fragment = (PhotoGalleryFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
             String query = intent.getStringExtra(SearchManager.QUERY);
             Log.i(TAG, "Received a new search query: " + query);
-            //使用shared Preference实现查询数据的保存
             PreferenceManager.getDefaultSharedPreferences(this).edit().putString(FlickrFetcher.PREF_SEARCH_QUERY, query).commit();
             fragment.updateItems();
-            Log.i(TAG, "update items");
         }
     }
 
@@ -101,7 +99,6 @@ public class PhotoGalleryActivity extends SingleFragmentActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(TAG, "onCreate called.");
         mBottomNavigationBar = (BottomNavigationBar) findViewById(R.id.bottom_navigation_bar_container);
 
         BottomNavigationItem imageItem = new BottomNavigationItem(R.drawable.ic_action_images, "view photo");
