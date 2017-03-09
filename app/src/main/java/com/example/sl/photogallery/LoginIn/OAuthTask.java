@@ -7,7 +7,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.example.sl.photogallery.model.FlickrFetcher;
+import com.example.sl.photogallery.Model.FlickrFetcher;
 import com.example.sl.photogallery.PhotoGalleryActivity;
 import com.googlecode.flickrjandroid.REST;
 import com.googlecode.flickrjandroid.oauth.OAuth;

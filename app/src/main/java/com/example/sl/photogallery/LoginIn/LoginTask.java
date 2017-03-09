@@ -11,7 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.sl.photogallery.model.FlickrFetcher;
+import com.example.sl.photogallery.Model.FlickrFetcher;
 import com.googlecode.flickrjandroid.REST;
 import com.googlecode.flickrjandroid.auth.Permission;
 import com.googlecode.flickrjandroid.oauth.OAuthInterface;

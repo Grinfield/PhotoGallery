@@ -1,6 +1,6 @@
 package com.example.sl.photogallery.TakePhoto;
 
-import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.transition.Fade;
@@ -25,12 +25,14 @@ public class PhotoTakenActivity extends SingleFragmentActivity {
         return new PhotoTakeFragment();
     }
 
-    @TargetApi(21)
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
-        getWindow().setEnterTransition(new Slide());
-        getWindow().setExitTransition(new Fade());
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
+            getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+            getWindow().setEnterTransition(new Slide());
+            getWindow().setExitTransition(new Fade());
+            super.onCreate(savedInstanceState);
+        }
         super.onCreate(savedInstanceState);
     }
 }

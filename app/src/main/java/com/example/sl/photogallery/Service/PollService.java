@@ -15,8 +15,8 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.example.sl.photogallery.model.FlickrFetcher;
-import com.example.sl.photogallery.model.GalleryItem;
+import com.example.sl.photogallery.Model.FlickrFetcher;
+import com.example.sl.photogallery.Model.GalleryItem;
 import com.example.sl.photogallery.PhotoGalleryActivity;
 import com.example.sl.photogallery.R;
 

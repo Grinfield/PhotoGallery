@@ -18,7 +18,7 @@ import com.example.sl.photogallery.LoginIn.LoginUtil;
 import com.example.sl.photogallery.TakePhoto.PhotoTakeFragment;
 import com.example.sl.photogallery.TakePhoto.PhotoTakenActivity;
 import com.example.sl.photogallery.ViewPhotos.PhotoGalleryFragment;
-import com.example.sl.photogallery.model.FlickrFetcher;
+import com.example.sl.photogallery.Model.FlickrFetcher;
 import com.googlecode.flickrjandroid.oauth.OAuth;
 
 public class PhotoGalleryActivity extends SingleFragmentActivity

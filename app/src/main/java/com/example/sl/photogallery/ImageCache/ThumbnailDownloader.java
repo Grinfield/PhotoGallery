@@ -84,7 +84,7 @@ public class ThumbnailDownloader{
             if (uri.equals(result.uri)) {
                 imageView.setBackground(new BitmapDrawable(result.bitmap));
             } else {
-                Log.w(TAG, "set image bitmap,but url has changed, ignored!");
+                Log.w(TAG, "set image bitmap, but url has changed, ignored!");
             }
         };
     };

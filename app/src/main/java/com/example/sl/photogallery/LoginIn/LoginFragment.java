@@ -115,7 +115,9 @@ public class LoginFragment extends BaseFragment {
     }
 
     public void load(OAuth oauth) {
-        if (oauth != null && oauth.getUser().getId() != null){
+        if (oauth != null
+                && oauth.getUser() != null
+                && oauth.getUser().getId() != null){
             String userName = oauth.getUser().getUsername();
             if (userName != null){
                 isLogin = true;

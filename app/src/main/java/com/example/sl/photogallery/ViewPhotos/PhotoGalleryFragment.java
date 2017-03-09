@@ -46,8 +46,8 @@ import com.example.sl.photogallery.ImageCache.ThumbnailDownloader;
 import com.example.sl.photogallery.LoginIn.LoginFragment;
 import com.example.sl.photogallery.R;
 import com.example.sl.photogallery.Service.PollService;
-import com.example.sl.photogallery.model.FlickrFetcher;
-import com.example.sl.photogallery.model.GalleryItem;
+import com.example.sl.photogallery.Model.FlickrFetcher;
+import com.example.sl.photogallery.Model.GalleryItem;
 import com.googlecode.flickrjandroid.oauth.OAuth;
 
 import java.io.File;
@@ -95,7 +95,9 @@ public class PhotoGalleryFragment extends BaseFragment {
     @Override
     public void onReceiveOauth(OAuth oauth) {
         Log.i(TAG, "receive broadcast: " + oauth);
-        if (oauth != null && oauth.getUser().getId() != null){
+        if (oauth != null
+                && oauth.getUser() != null
+                && oauth.getUser().getId() != null){
             String userName = oauth.getUser().getUsername();
             if (userName != null){
                 backupOAuth = mOAuth = oauth;
